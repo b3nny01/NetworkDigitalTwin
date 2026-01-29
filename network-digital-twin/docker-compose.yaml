@@ -1,0 +1,91 @@
+services:
+# Physical Layer Simulation=========================================================================================
+  data-producer:
+    image: ghcr.io/b3nny01/NetworkDigitalTwin/data-producer:0.1-mock
+    build:
+      context: ./data-producer-mock
+      dockerfile: Dockerfile
+    environment:
+      - INFLUX_HOST=http://influx-db:8181
+      - INFLUX_DB=network_requests
+      - NETWORK_CELL=5060
+      - PUSH_INTERVAL= -1 # to write the entire file at once
+    depends_on:
+      - influx-db
+
+# Inference Layer===================================================================================================
+  inference-backend:
+    image: ghcr.io/b3nny01/NetworkDigitalTwin/inference-backend:0.1-lstm
+    build:
+      context: ./inference-backend/lstm
+      dockerfile: Dockerfile
+    ports:
+      - 50051:50051
+    environment:
+      - INFLUX_HOST=http://influx-db:8181
+      - INFLUX_DB=network_requests
+      - NETWORK_CELL=5060
+    depends_on:
+      - data-producer
+  
+  # inference-backend:
+  #   image: ghcr.io/b3nny01/NetworkDigitalTwin/inference-backend:0.1-sarima
+  #   build:
+  #     context: ./inference-backend/sarima
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 50051:50051
+  #   environment:
+  #     - INFLUX_HOST=http://influx-db:8181
+  #     - INFLUX_DB=network_requests
+  #     - NETWORK_CELL=5060
+  #   depends_on:
+  #     - influx-db
+
+# DataBase Layer====================================================================================================
+  influx-db:
+    image: influxdb:3-core
+    expose:
+      - 8181
+    ports:
+      - 8181:8181
+    command:
+      - influxdb3
+      - serve
+      - --node-id=node0
+      - --object-store=file
+      - --data-dir=/var/lib/influxdb3/data
+      - --plugin-dir=/var/lib/influxdb3/plugins
+      - --without-auth
+    # user: "1000:1000"
+    # volumes:
+    # - ./influx-db/data:/var/lib/influxdb3/data
+    # - ./influx-db/plugins:/var/lib/influxdb3/plugins
+
+# Observability Layer===============================================================================================
+  cadvisor:
+    image: ghcr.io/google/cadvisor:0.56.2
+    container_name: cadvisor
+    ports:
+      - 8080:8080
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    depends_on:
+      - inference-backend
+
+  prometheus:
+    image: prom/prometheus:v3.8.1
+    ports: 
+    - 9090:9090
+    volumes:
+    - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    # - ./prometheus/data:/prometheus
+    extra_hosts:
+    - host.docker.internal:host-gateway
+  
+
+    
+    
