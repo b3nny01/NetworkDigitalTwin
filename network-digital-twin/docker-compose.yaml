@@ -1,7 +1,7 @@
 services:
 # Physical Layer Simulation=========================================================================================
   data-producer:
-    image: ghcr.io/b3nny01/NetworkDigitalTwin/data-producer:0.1-mock
+    image: ghcr.io/b3nny01/network-digital-twin/data-producer:0.1-mock
     build:
       context: ./data-producer-mock
       dockerfile: Dockerfile
@@ -15,7 +15,7 @@ services:
 
 # Inference Layer===================================================================================================
   inference-backend:
-    image: ghcr.io/b3nny01/NetworkDigitalTwin/inference-backend:0.1-lstm
+    image: ghcr.io/b3nny01/network-digital-twin/inference-backend:0.1-lstm
     build:
       context: ./inference-backend/lstm
       dockerfile: Dockerfile
@@ -29,7 +29,7 @@ services:
       - data-producer
   
   # inference-backend:
-  #   image: ghcr.io/b3nny01/NetworkDigitalTwin/inference-backend:0.1-sarima
+  #   image: ghcr.io/b3nny01/network-digital-twin/inference-backend:0.1-sarima
   #   build:
   #     context: ./inference-backend/sarima
   #     dockerfile: Dockerfile

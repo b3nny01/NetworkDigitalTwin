@@ -1,4 +1,4 @@
-# Network-Digital-Twin
+# NetworkDigitalTwin
 This repository contains the code for a benchmark about the network traffic prediction capabilities of different traffic prediction models.
 Even though an accuracy evaluation of the two models is also provided, this is not the main purpose of this benchmark, which instead aims at comparing the resource utilization of th two different solutions in order to drive the development of context aware NDTs capable of self-configuring themselves to adapt to different application scenarios (e.g. depending on the availability of system resources the DT autonomously decides to perform the inference on the CPU or on the GPU).
 Within the repo a PoC implementation of a containerized NDT is also provided.
@@ -7,7 +7,7 @@ Within the repo a PoC implementation of a containerized NDT is also provided.
 The repository is organized in three main folders, `inference-benchmark`, which contains the dataset and the notebooks used to train the ML models and perform the actual benchmark, and `network-digital-twin`, containing a PoC implementation of a container-based network digital twin leveraging the produced forecasting models.
 
 ```bash
-network-digital-twin
+NetworkDigitalTwin
 |
 |-- inference-benchmark
 |   |
